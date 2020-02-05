@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.seu.dao.AdminDao">
+
+    <insert id="persist" useGeneratedKeys="true" keyProperty="id">
+        insert into admin (name,password,email,approvalPending) values(#{name},#{password},#{email},1);
+    </insert>
+
+    <update id="update">
+        update admin set
+        <trim suffixOverrides=",">
+            <if test="name!=null">
+                name = #{name},
+            </if>
+            <if test="password!=null">
+                password = #{password},
+            </if>
+            <if test="email!=null">
+                email = #{email},
+            </if>
+        </trim>
+        where id = #{id};
+    </update>
+
+    <update id="completeInfo" parameterType="edu.seu.model.Admin">
+        update admin
+        set
+        <trim suffixOverrides=",">
+            phoneNum = #{phoneNum},
+            sex = #{sex},
+            company = #{company},
+            address = #{address},
+            domain = #{domain},
+        </trim>
+        <where>id = #{id}</where>
+    </update>
+
+</mapper>
