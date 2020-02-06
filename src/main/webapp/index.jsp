@@ -172,6 +172,40 @@
                         </ul>
                     </td>
                 </tr>
+                <tr>
+                    <td>评价结果查询(篇名/关键词)
+                        <input type="text" name="" class="layui-input doc-search" id="simSearchKey"
+                               placeholder="请输入：关键字" style="width:180px;">
+                        <button class="layui-btn layui-btn-normal layui-btn-sm" lay-submit="" lay-filter="formSearch" id="simpleSearch"
+                                onclick="doClickSimplySearch();"  style="margin-top:5px;width: 180px">搜索
+                        </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <div class="panel panel-default" style="width:240px;">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">
+                                    查询结果列表
+                                </h3>
+                            </div>
+                            <div id="table_div" align="left">
+                                <table id="queryResultTable" width="98%" border="0" cellspacing="0" cellpadding="0">
+                                    <tr>
+                                        <th>&nbsp;<b>查询编号</b></th>
+                                        <th>&nbsp;<b>用户名</b></th>
+                                        <th>&nbsp;<b>园区类型</b></th>
+                                        <th>&nbsp;<b>       </b></th>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="panel-body">
+
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
             </table>
         </div>
     </div>
@@ -1229,7 +1263,7 @@
     }
 
     function calculation() {
-        debugger;
+        //debugger;
         var array = new Array(15);
         for (var i = 0; i < 7; i++) {
             array[i] = document.getElementById(("data" + i).toString()).value;
