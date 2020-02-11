@@ -15,7 +15,7 @@
     <meta http-equiv="Content-Type" content="text/html; Charset=gb2312">
     <meta http-equiv="Content-Language" content="zh-CN">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no"/>
-    <title>COIPFDI</title>
+    <title>OICPCII</title>
     <link rel="stylesheet" href="static/plug/layui/css/layui.css">
     <%--网页图标--%>
     <link rel="shortcut icon" href="static/images/COIPIB.png" type="image/x-icon">
@@ -58,7 +58,7 @@
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header position: absolute;">
         <a href="${ctx}/index.jsp">
-            <div class="layui-logo doc-logo" style="font-weight: bold">COIPFDI</div>
+            <div class="layui-logo doc-logo" style="font-weight: bold">OICPCII</div>
         </a>
         <ul class="layui-nav layui-layout-left small-head-nav-left">
             <li class="layui-nav-item"><a href="javascript:;"></a></li>
@@ -88,20 +88,19 @@
     <div class="blog-main">
         <div style="margin-left: 20px;margin-right: 50px;" id="parameterDiv">
             <table class="table table-hover table-bordered" style="text-align:center;margin:20px;">
-                <%--    <tr><td rowspan="2"><table><div class="bias2"><tr><td width="60%"></td><td >园区类型</td></tr><tr><td></td><td></td></tr><tr><td>指标</td><td></td></tr></div></table></td><td colspan="2">经贸合作区</td><td colspan="2">工业园</td><td colspan="2">科技园</td><td colspan="2">资源园</td><td colspan="2">物流园/商业园</td><td colspan="2">农业园</td><td colspan="2">其他园区</td></tr>--%>
-                <tr><td rowspan="2" style="padding: 0px" width="180px;"><img src="static/images/table1.png"></td><td colspan="2">经贸合作区</td><td colspan="2">工业园</td><td colspan="2">科技园</td><td colspan="2">资源园</td><td colspan="2">物流园/商业园</td><td colspan="2">农业园</td><td colspan="2">其他园区</td></tr>
-                <tr><td>权重</td><td>标准</td><td>权重</td><td>标准</td><td>权重</td><td>标准</td><td>权重</td><td>标准</td><td>权重</td><td>标准</td><td>权重</td><td>标准</td><td>权重</td><td>标准</td></tr>
-                <tr><td>产业融合度</td><td id="industry0"></td><td id="industry1"></td><td id="industry2"></td><td id="industry3"></td><td id="industry4"></td><td id="industry5"></td><td id="industry6"></td><td id="industry7"></td><td id="industry8"></td><td id="industry9"></td><td id="industry10"></td><td id="industry11"></td><td id="industry12"></td><td id="industry13"></td></tr>
-                <tr><td>市场融合度</td><td id="market0"></td><td id="market1"></td><td id="market2"></td><td id="market3"></td><td id="market4"></td><td id="market5"></td><td id="market6"></td><td id="market7"></td><td id="market8"></td><td id="market9"></td><td id="market10"></td><td id="market11"></td><td id="market12"></td><td id="market13"></td></tr>
-                <tr><td>技术融合度</td><td id="technology0"></td><td id="technology1"></td><td id="technology2"></td><td id="technology3"></td><td id="technology4"></td><td id="technology5"></td><td id="technology6"></td><td id="technology7"></td><td id="technology8"></td><td id="technology9"></td><td id="technology10"></td><td id="technology11"></td><td id="technology12"></td><td id="technology13"></td></tr>
-                <tr><td>人员融合度</td><td id="hr0"></td><td id="hr1"></td><td id="hr2"></td><td id="hr3"></td><td id="hr4"></td><td id="hr5"></td><td id="hr6"></td><td id="hr7"></td><td id="hr8"></td><td id="hr9"></td><td id="hr10"></td><td id="hr11"></td><td id="hr12"></td><td id="hr13"></td></tr>
-                <tr><td>政策依赖度</td><td id="policy0"></td><td id="policy1"></td><td id="policy2"></td><td id="policy3"></td><td id="policy4"></td><td id="policy5"></td><td id="policy6"></td><td id="policy7"></td><td id="policy8"></td><td id="policy9"></td><td id="policy10"></td><td id="policy11"></td><td id="policy12"></td><td id="policy13"></td></tr>
-                <tr><td>资本依赖度</td><td id="capital0"></td><td id="capital1"></td><td id="capital2"></td><td id="capital3"></td><td id="capital4"></td><td id="capital5"></td><td id="capital6"></td><td id="capital7"></td><td id="capital8"></td><td id="capital9"></td><td id="capital10"></td><td id="capital11"></td><td id="capital12"></td><td id="capital13"></td></tr>
-                <tr><td>社会文化影响度</td><td id="culture0"></td><td id="culture1"></td><td id="culture2"></td><td id="culture3"></td><td id="culture4"></td><td id="culture5"></td><td id="culture6"></td><td id="culture7"></td><td id="culture8"></td><td id="culture9"></td><td id="culture10"></td><td id="culture11"></td><td id="culture12"></td><td id="culture13"></td></tr>
+                <tr><td rowspan="2" style="padding: 0px" width="180px;"><img src="static/images/table1.png"></td><td>经贸合作区</td><td>加工制造园区</td><td>商贸物流园区</td><td>科技研发园区</td><td>其他园区</td><td rowspan="2">权重</td></tr>
+                <tr><td>标准(%)</td><td>标准(%)</td><td>标准(%)</td><td>标准(%)</td><td>标准(%)</td></tr>
+                <tr><td>居住用地</td><td id="live0"></td><td id="live1"></td><td id="live2"></td><td id="live3"></td><td id="live4"></td><td id="live5"></td></tr>
+                <tr><td>生活服务设施用地</td><td id="facility0"></td><td id="facility1"></td><td id="facility2"></td><td id="facility3"></td><td id="facility4"></td><td id="facility5"></td></tr>
+                <tr><td>工业仓储用地</td><td id="industry0"></td><td id="industry1"></td><td id="industry2"></td><td id="industry3"></td><td id="industry4"></td><td id="industry5"></td></tr>
+                <tr><td>生产配套设施用地</td><td id="produce0"></td><td id="produce1"></td><td id="produce2"></td><td id="produce3"></td><td id="produce4"></td><td id="produce5"></td></tr>
+                <tr><td>道路与交通设施用地</td><td id="road0"></td><td id="road1"></td><td id="road2"></td><td id="road3"></td><td id="road4"></td><td id="road5"></td></tr>
+                <tr><td>绿化用地</td><td id="green0"></td><td id="green1"></td><td id="green2"></td><td id="green3"></td><td id="green4"></td><td id="green5"></td></tr>
             </table>
             <div style="text-align: center;margin: 60px;position: relative">
                 <input type="file" id="inputFile" class="form-control" name="inputFile" style="width: 80%;float: left">
                 <button class="layui-btn" lay-submit="" lay-filter="formSearch" onclick="updateData()" id="" style="float: left">上传文件 </button>
+                <br><br><div style="text-align: left">说明：仅管理员登陆后可通过上传文件修改参数。</div>
             </div>
         </div>
     </div>
@@ -123,14 +122,13 @@
                 var data=eval('('+result+')');
 
                 var j=0;
-                for(var i=0;i<14;i++){
+                for(var i=0;i<6;i++){
+                    document.getElementById('live'+j).innerText=data[i]['live'];
+                    document.getElementById('facility'+j).innerText=data[i]['facility'];
                     document.getElementById('industry'+j).innerText=data[i]['industry'];
-                    document.getElementById('market'+j).innerText=data[i]['market'];
-                    document.getElementById('technology'+j).innerText=data[i]['technology'];
-                    document.getElementById('hr'+j).innerText=data[i]['hr'];
-                    document.getElementById('policy'+j).innerText=data[i]['policy'];
-                    document.getElementById('capital'+j).innerText=data[i]['capital'];
-                    document.getElementById('culture'+j).innerText=data[i]['culture'];
+                    document.getElementById('produce'+j).innerText=data[i]['produce'];
+                    document.getElementById('road'+j).innerText=data[i]['road'];
+                    document.getElementById('green'+j).innerText=data[i]['green'];
                     j++;
                 }
             },

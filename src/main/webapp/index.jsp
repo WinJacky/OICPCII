@@ -108,7 +108,6 @@
         </a>
     </div>
 
-
     <div class="layui-side left-nav-index" style="width:20%">
         <div class="layui-side-scroll" style="width:100%">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） --><!-- 选择区部分 -->
@@ -131,18 +130,6 @@
                             <li class="layui-nav-item">时间序列
                                 <DIV style="POSITION: relative">
                                     <SELECT class="form-control" id="timeSequence"
-                                            style="CLIP: rect(0px auto auto 80px); POSITION: relative">
-                                        <%
-                                            for (int i = 1; i <= 1000; i++) {
-                                                out.print("<OPTION value='" + i + "'>" + i + "</OPTION>");
-                                            }
-                                        %>
-                                    </SELECT>
-                                </DIV>
-                            </li>
-                            <li class="layui-nav-item">园区类型数
-                                <DIV style="POSITION: relative">
-                                    <SELECT class="form-control" id="typeCountSel"
                                             style="CLIP: rect(0px auto auto 80px); POSITION: relative">
                                         <%
                                             for (int i = 1; i <= 1000; i++) {
@@ -205,7 +192,6 @@
                         </div>
                     </td>
                 </tr>
-
             </table>
         </div>
     </div>
@@ -245,55 +231,51 @@
                             <td>标准</td>
                         </tr>
                         <tr>
-                            <td>产品融合度</td>
+                            <td>居住用地</td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="data0"></td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="weight0"></td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="standard0">
                             </td>
                         </tr>
                         <tr>
-                            <td>市场融合度</td>
+                            <td>生活服务设施用地</td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="data1"></td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="weight1"></td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="standard1">
                             </td>
                         </tr>
                         <tr>
-                            <td>技术融合度</td>
+                            <td>工业仓储用地</td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="data2"></td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="weight2"></td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="standard2">
                             </td>
                         </tr>
                         <tr>
-                            <td>人员融合度</td>
+                            <td>生产配套设施用地</td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="data3"></td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="weight3"></td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="standard3">
                             </td>
                         </tr>
                         <tr>
-                            <td>政策依赖度</td>
+                            <td>道路与交通设施用地</td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="data4"></td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="weight4"></td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="standard4">
                             </td>
                         </tr>
                         <tr>
-                            <td>资本依赖度</td>
+                            <td>绿化用地</td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="data5"></td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="weight5"></td>
                             <td><input type="text" style="border:0px" class="layui-input doc-search" id="standard5">
                             </td>
                         </tr>
-                        <tr>
-                            <td>社会文化影响度</td>
-                            <td><input type="text" style="border:0px" class="layui-input doc-search" id="data6"></td>
-                            <td><input type="text" style="border:0px" class="layui-input doc-search" id="weight6"></td>
-                            <td><input type="text" style="border:0px" class="layui-input doc-search" id="standard6">
-                            </td>
-                        </tr>
                     </table>
+                    <div class="panel panel-default">备注：生活服务设施用地包括商业服务业设施用地、广场用地；工业仓储用地包括工业用地、物流仓储用地；
+                        生产配套设施用地包括公共管理与公共服务设施用地、基础设施用地（如研发用地、供水、供电、排水、环卫等设施用地）；
+                        道路与交通设施用地包括道路用地、社会停车场用地；绿化用地包括防护用地、公园绿地。</div>
                 </div>
             </div>
             <!--右边栏目--><!-- 数据输出部分 -->
@@ -328,12 +310,13 @@
         <div class="clear"></div>
     </div>
 
-    <div class="layui-footer" style="left:20%">
+    <div class="layui-footer" style="left:20%;">
         <!-- 底部固定区域 -->
         <button class="layui-btn layui-btn-primary layui-btn-sm" id="back" style="display: none;">
             <i class="fa fa-chevron-left" aria-hidden="true"></i>
         </button>
     </div>
+
 </div>
 <input type="hidden" id="isEdit" value="false">
 <input type="hidden" id="isActive" value="false">
@@ -1264,21 +1247,22 @@
 
     function calculation() {
         //debugger;
-        var array = new Array(15);
-        for (var i = 0; i < 7; i++) {
+        var array = new Array(15);//保存数值和权重
+        for (var i = 0; i < 6; i++) {//保存数值
             array[i] = document.getElementById(("data" + i).toString()).value;
         }
         if (result != null && array[0] == "") {
             showBarChart(result);
             return;
         }
-        for (var i = 0; i < 7; i++) {
-            array[7 + i] = document.getElementById(("weight" + i).toString()).value;
+        for (var i = 0; i < 6; i++) {//保存权重
+            array[6 + i] = document.getElementById(("weight" + i).toString()).value;
         }
+        //园区类型
         var typeObj = document.getElementById("type");
         var typeindex = typeObj.selectedIndex;
         var type = typeObj.options[typeindex].text;
-
+        //是否自定义
         var customizeObj = document.getElementById("customize");
         var customizeindex = customizeObj.selectedIndex;
         var customize = customizeObj.options[customizeindex].text;
@@ -1296,17 +1280,15 @@
     }
 
     function showResultInChartContainer(data) {
-        let str;
-        if (data < 20) {
-            str = "很低";
-        } else if (data >= 20 && data < 40) {
+        var str;
+        if (data >= 0 && data < 40) {
             str = "较低";
         } else if (data >= 40 && data < 60) {
             str = "一般";
         } else if (data >= 60 && data < 80) {
-            str = "较高";
+            str = "较好";
         } else if (data >= 80) {
-            str = "很高";
+            str = "好";
         }
         const container = document.getElementById("chartContainer");
         container.innerText = "融合化发展指数\n" + data + "\n融合化发展水平" + str;
@@ -1324,10 +1306,6 @@
         var Obj2 = document.getElementById("timeSequence");
         var index2 = Obj2.selectedIndex;
         var text2 = Obj2.options[index2].text;
-        //园区类型数
-        var Obj3 = document.getElementById("typeCountSel");
-        var index3 = Obj3.selectedIndex;
-        var text3 = Obj3.options[index3].text;
         //园区类型
         var Obj4 = document.getElementById("type");
         var index4 = Obj4.selectedIndex;
@@ -1341,7 +1319,6 @@
         formData.append('file', $('#inputFile')[0].files[0]); // 固定格式
         formData.append('numCount', text1);
         formData.append('timeCount', text2);
-        formData.append('typeCount', text3);
         formData.append('type', text4);
         formData.append('chartType', value);
 
