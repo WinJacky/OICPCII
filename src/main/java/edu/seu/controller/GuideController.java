@@ -26,8 +26,8 @@ import java.io.IOException;
 import java.net.URLEncoder;
 
 /**
- * @author lec,wjx
- * @date 2019/10/11
+ * @author wjx
+ * @date 2020/2/15
  */
 @RequestMapping("/guideFile")
 @Controller
@@ -56,14 +56,12 @@ public class GuideController {
             adminAuth();
 
             String filename = file.getOriginalFilename();
-            System.out.println(filename);
             ServletContext context = request.getSession().getServletContext();
             String realPath = context.getRealPath("/file");
-            System.out.println(realPath);
 
             if(!"pdf".equals(FilenameUtils.getExtension(filename))){
                 System.out.println("非PDF文件");
-                return JSON.toJSONString("File is not PDF!");
+                return JSON.toJSONString("not pdf");
             }
             File mkdir = new File(realPath);
             if(!mkdir.exists()) {
@@ -74,9 +72,12 @@ public class GuideController {
             file.transferTo(f);
 
             return JSON.toJSONString("success");
+        }catch(OICPCIIExceptions exception){
+            LOGGER.error(exception.getMessage());
+            return JSON.toJSONString("normal user");
         }catch(Exception e){
             LOGGER.error(e.getMessage());
-            return JSON.toJSONString("error");
+            return JSON.toJSONString("not pdf");
         }
     }
 
@@ -92,7 +93,7 @@ public class GuideController {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             httpHeaders.setContentDispositionFormData("attachment",URLEncoder.encode(file.getName(), "UTF-8"));
-            return new ResponseEntity<byte[]>(FileUtils.readFileToByteArray(file),httpHeaders, HttpStatus.OK);
+            return new ResponseEntity<>(FileUtils.readFileToByteArray(file), httpHeaders, HttpStatus.OK);
         }else{
             return null;
         }

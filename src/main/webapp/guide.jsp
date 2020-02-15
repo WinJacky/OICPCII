@@ -58,7 +58,7 @@
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header position: absolute;">
         <a href="${ctx}/index.jsp">
-            <div class="layui-logo doc-logo" style="font-weight: bold">OICPCII</div>
+            <div class="layui-logo doc-logo" style="font-standard: bold">OICPCII</div>
         </a>
         <ul class="layui-nav layui-layout-left small-head-nav-left">
             <li class="layui-nav-item"><a href="javascript:;"></a></li>
@@ -121,7 +121,7 @@
             success: function(result){
                 if(result === "success"){
                     alert("说明文件上传成功！");
-                }else if(result === "error"){
+                }else if(result === "normal user"){
                     alert("非管理员用户无上传权限！");
                 }else{
                     alert("注意：上传文件格式必须为PDF！");

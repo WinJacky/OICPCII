@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="edu.seu.dao.StandardDao">
+    <update id="updateStandard" parameterType="edu.seu.model.Standard">
+        update standard set
+        <trim suffixOverrides=",">
+            <if test="occupancy!=null">
+                occupancy = #{occupancy},
+            </if>
+            <if test="infrastructure!=null">
+                infrastructure = #{infrastructure},
+            </if>
+            <if test="depository!=null">
+                depository = #{depository},
+            </if>
+            <if test="production!=null">
+                production = #{production},
+            </if>
+            <if test="traffic!=null">
+                traffic = #{traffic},
+            </if>
+            <if test="green!=null">
+                green = #{green},
+            </if>
+        </trim>
+        <where>type = #{type}</where>
+    </update>
+</mapper>

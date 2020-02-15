@@ -58,7 +58,7 @@
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header position: absolute;">
         <a href="${ctx}/index.jsp">
-            <div class="layui-logo doc-logo" style="font-weight: bold">OICPCII</div>
+            <div class="layui-logo doc-logo" style="font-standard: bold">OICPCII</div>
         </a>
         <ul class="layui-nav layui-layout-left small-head-nav-left">
             <li class="layui-nav-item"><a href="javascript:;"></a></li>
@@ -123,11 +123,11 @@
 
                 var j=0;
                 for(var i=0;i<6;i++){
-                    document.getElementById('live'+j).innerText=data[i]['live'];
-                    document.getElementById('facility'+j).innerText=data[i]['facility'];
-                    document.getElementById('industry'+j).innerText=data[i]['industry'];
-                    document.getElementById('produce'+j).innerText=data[i]['produce'];
-                    document.getElementById('road'+j).innerText=data[i]['road'];
+                    document.getElementById('live'+j).innerText=data[i]['occupancy'];
+                    document.getElementById('facility'+j).innerText=data[i]['infrastructure'];
+                    document.getElementById('industry'+j).innerText=data[i]['depository'];
+                    document.getElementById('produce'+j).innerText=data[i]['production'];
+                    document.getElementById('road'+j).innerText=data[i]['traffic'];
                     document.getElementById('green'+j).innerText=data[i]['green'];
                     j++;
                 }
@@ -164,10 +164,12 @@
                     alert("默认数据修改成功！");
                     //刷新界面
                     history.go(0);
-                }else if(result === "error"){
+                }else if(result === "normal user"){
                     alert("非管理员用户无修改权限！");
                 }else if(result === "empty file"){
                     alert("管理员输入的文件为空！");
+                }else if(result === "unknown error"){
+                    alert("发生未知错误！");
                 }
             },
             failure: function (data) {

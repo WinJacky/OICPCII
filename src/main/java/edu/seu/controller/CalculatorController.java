@@ -5,8 +5,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import edu.seu.base.CodeEnum;
 import edu.seu.base.CommonResponse;
-import edu.seu.model.Weight;
-import edu.seu.service.WeightService;
+import edu.seu.model.Standard;
+import edu.seu.service.StandardService;
 import edu.seu.util.ImportExcel;
 import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Cell;
@@ -41,7 +41,7 @@ import java.util.List;
 
 /**
  * @author wjx
- * @date 2019/10/11
+ * @date 2020/2/14
  */
 @RequestMapping("/calculate")
 @Controller
@@ -50,68 +50,94 @@ public class CalculatorController {
     private static final Logger LOGGER = LoggerFactory.getLogger(CalculatorController.class);
 
     @Autowired
-    WeightService weightService;
+    StandardService standardService;
 
+    /**
+     * 进行用户填入的表中数据的计算并返回结果
+     */
     @ResponseBody
     @RequestMapping("/table")
     public String calculateTable(HttpServletRequest request, HttpServletResponse response) {
         try {
             String customize = request.getParameter("customize");
             String arr = request.getParameter("array");
-            double goal;
             String[] str = arr.substring(1, arr.length() - 1).split(",");
             double[] array = new double[str.length - 1];
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < 6; i++) {
                 array[i] = Double.parseDouble(str[i].substring(1, str[i].length() - 1));
             }
+            //权重，作为goal函数计算的第二个参数
+            Standard weight = new Standard();
+            //标准值，作为goal函数计算的第一个参数
+            Standard standard = new Standard();
+            standard.setOccupancy(array[0]);
+            standard.setInfrastructure(array[1]);
+            standard.setDepository(array[2]);
+            standard.setProduction(array[3]);
+            standard.setTraffic(array[4]);
+            standard.setGreen(array[5]);
 
             //自定义模式
             if ("是".equals(customize)) {
-                for (int i = 7; i < 14; i++) {
+                standard.setType("其他园区");
+                for (int i = 6; i < 12; i++) {
                     if (str[i].equals("")) {
                         array[i] = 0;
                     } else {
                         array[i] = Double.parseDouble(str[i].substring(1, str[i].length() - 1));
                     }
                 }
-                goal = goal(Arrays.copyOfRange(array, 0, 7), Arrays.copyOfRange(array, 7, 14));
+                weight.setOccupancy(array[6]);
+                weight.setInfrastructure(array[7]);
+                weight.setDepository(array[8]);
+                weight.setProduction(array[9]);
+                weight.setTraffic(array[10]);
+                weight.setGreen(array[11]);
             }
             //非自定义模式
             else {
                 String type = request.getParameter("type");
-                Weight temp = weightService.queryWeightByType(type);
-                double[] weight = new double[array.length];
-                weight[0] = temp.getIndustry();
-                weight[1] = temp.getMarket();
-                weight[2] = temp.getTechnology();
-                weight[3] = temp.getHr();
-                weight[4] = temp.getPolicy();
-                weight[5] = temp.getCapital();
-                weight[6] = temp.getCulture();
-                goal = goal(Arrays.copyOfRange(array, 0, 7), weight);
+                standard.setType(type);
+                weight = standardService.queryWeight();
             }
+
+            double goal = goal(standard,weight);
             response.addHeader("goal", String.valueOf(goal));
             return JSON.toJSONString(String.format("{'goal': %s}", String.format("%.4f", goal)));
         } catch (Exception e) {
-            LOGGER.error("wjx__" + e.getMessage());
+            LOGGER.error("seu__" + e.getMessage());
             return new CommonResponse(CodeEnum.USER_ERROR.getValue(), e.getMessage()).toJSONString();
         }
     }
 
+    /**
+     * 根据用户所填表中相应数据输出文件到本地，再通过outputTableExcel函数返回给用户下载
+     */
     @ResponseBody
     @RequestMapping("/outputTable")
     public void outputTable(HttpServletRequest request) {
         try {
             String customize = request.getParameter("customize");
             String arr = request.getParameter("array");
-            double goal;
 
             String[] str = arr.substring(1, arr.length() - 1).split(",");
             double[] array = new double[str.length - 1];
-            for (int i = 0; i < 7; i++) {
+            for (int i = 0; i < 6; i++) {
                 array[i] = Double.parseDouble(str[i].substring(1, str[i].length() - 1));
             }
 
+            //权重，作为goal函数计算的第二个参数
+            Standard weight = new Standard();
+            //标准值，作为goal函数计算的第一个参数
+            Standard standard = new Standard();
+            standard.setOccupancy(array[0]);
+            standard.setInfrastructure(array[1]);
+            standard.setDepository(array[2]);
+            standard.setProduction(array[3]);
+            standard.setTraffic(array[4]);
+            standard.setGreen(array[5]);
+
+            //获取当前文件路径
             ServletContext context = request.getSession().getServletContext();
             String realPath = context.getRealPath("/file");
             //若文件路径不存在，则创建
@@ -120,40 +146,39 @@ public class CalculatorController {
                 mkdir.mkdirs();
             }
 
-            Workbook wb = new XSSFWorkbook();
             //得到第一个shell
-            Sheet sheet = wb.createSheet("融合指数测度表");
+            Workbook wb = new XSSFWorkbook();
+            Sheet sheet = wb.createSheet("产城融合度评测表");
 
             //自定义模式
             if ("是".equals(customize)) {
-                for (int i = 7; i < 14; i++) {
+                standard.setType("其他园区");
+                for (int i = 6; i < 12; i++) {
                     if (str[i].equals("")) {
                         array[i] = 0;
                     } else {
                         array[i] = Double.parseDouble(str[i].substring(1, str[i].length() - 1));
                     }
                 }
-                goal = goal(Arrays.copyOfRange(array, 0, 7), Arrays.copyOfRange(array, 7, 14));
-                tableExcelGenerator(sheet, Arrays.copyOfRange(array, 0, 7), Arrays.copyOfRange(array, 7, 14), goal);
+                weight.setOccupancy(array[6]);
+                weight.setInfrastructure(array[7]);
+                weight.setDepository(array[8]);
+                weight.setProduction(array[9]);
+                weight.setTraffic(array[10]);
+                weight.setGreen(array[11]);
             }
             //非自定义模式
             else {
                 String type = request.getParameter("type");
-                Weight temp = weightService.queryWeightByType(type);
-                double[] weight = new double[array.length];
-                weight[0] = temp.getIndustry();
-                weight[1] = temp.getMarket();
-                weight[2] = temp.getTechnology();
-                weight[3] = temp.getHr();
-                weight[4] = temp.getPolicy();
-                weight[5] = temp.getCapital();
-                weight[6] = temp.getCulture();
-                goal = goal(Arrays.copyOfRange(array, 0, 7), weight);
-                tableExcelGenerator(sheet, Arrays.copyOfRange(array, 0, 7), weight, goal);
+                standard.setType(type);
+                weight = standardService.queryWeight();
             }
 
+            //生成Excel表
+            double goal = goal(standard,weight);
+            tableExcelGenerator(sheet, Arrays.copyOfRange(array, 0, 6), weight, goal);
             //将文件输出到本地特定位置，供outputExcel返回给前端下载
-            String fileName = "融合指数测度表.xlsx";
+            String fileName = "产城融合度评测表.xlsx";
             FileOutputStream fileOutputStream = new FileOutputStream(realPath + "/" + fileName);
             wb.write(fileOutputStream);
             fileOutputStream.close();
@@ -167,16 +192,25 @@ public class CalculatorController {
     /**
      * Excel表数据填充函数
      */
-    public void tableExcelGenerator(Sheet sheet, double[] data, double[] weight, double goal) {
-        String[] str1 = {"指标", "数值", "权重", "融合化发展指数"};
-        String[] str2 = {"产品融合度", "市场融合度", "技术融合度", "人员融合度", "政策依赖度", "资本依赖度", "社会文化影响度"};
+    public void tableExcelGenerator(Sheet sheet, double[] data, Standard standard, double goal) {
+        String[] str1 = {"指标", "数值", "权重", "产城融合指数"};
+        String[] str2 = {"居住用地", "生活服务设施用地", "工业仓储用地", "生产配套设施用地", "道路与交通设施用地", "绿化用地"};
+
+        double[] weight = new double[str2.length];
+        weight[0] = standard.getOccupancy();
+        weight[1] = standard.getInfrastructure();
+        weight[2] = standard.getDepository();
+        weight[3] = standard.getProduction();
+        weight[4] = standard.getTraffic();
+        weight[5] = standard.getGreen();
 
         Row row = sheet.createRow(0);
         for (int c = 0; c < 4; c++) {
+            //生成第一行提示文字
             Cell cell = row.createCell(c);
             cell.setCellValue(str1[c]);
         }
-        for (int r = 1; r <= 7; r++) {
+        for (int r = 1; r <= 6; r++) {
             //生成最左列提示信息
             Row sheetRow = sheet.createRow(r);
             Cell cell = sheetRow.createCell(0);
@@ -202,9 +236,9 @@ public class CalculatorController {
     public String calculateFile(HttpServletRequest request, HttpServletResponse response,
                                 @RequestParam(value = "file") MultipartFile file, @RequestParam(value = "numCount") String numCount,
                                 @RequestParam(value = "timeCount") String timeCount, @RequestParam(value = "typeCount") String typeCount, @RequestParam(value = "type") String type) throws IOException {
-        //几个园区
-        int num = Integer.parseInt(numCount);
-        //共几年
+        //园区个数
+        int park = Integer.parseInt(numCount);
+        //时间序列数
         int year = Integer.parseInt(timeCount);
         //园区类型数
         int typeNum = Integer.parseInt(typeCount);
@@ -213,25 +247,30 @@ public class CalculatorController {
          * 读取上传文件
          */
         ImportExcel importExcel = new ImportExcel();
-        List<Weight> dataList = importExcel.read(file.getOriginalFilename(), file);
+        //获取当前文件路径
+        ServletContext context = request.getSession().getServletContext();
+        String path = context.getRealPath("/fileupload");
+        List<Standard> dataList = importExcel.read(path, file);
         List<Double> goalArray = new ArrayList<>();
 
         //错误判断
         if (dataList == null) {
             return new CommonResponse(CodeEnum.USER_ERROR.getValue(), "您输入的文件为空！").toJSONString();
         }
-        if ((typeNum == 1) && (dataList.size() < year * num)) {
+        if ((typeNum == 1) && (dataList.size() < year * park)) {
             return new CommonResponse(CodeEnum.USER_ERROR.getValue(), "文件中的数据条目不达标！请重新输入！").toJSONString();
         }
-        if ((typeNum > 1) && (dataList.size() != (year + 2) * num)) {
+        if ((typeNum > 1) && (dataList.size() != (year + 2) * park)) {
             return new CommonResponse(CodeEnum.USER_ERROR.getValue(), "文件中的数据条目不达标！请重新输入！").toJSONString();
         }
         double goal;
         JSONArray array = new JSONArray();
         //如果为单个园区类型并省略权重信息时，则去数据库取出相应权重计算
-        if ((typeNum == 1) && (dataList.size() == year * num)) {
-            Weight weight = weightService.queryWeightByType(type);
+        if ((typeNum == 1) && (dataList.size() == year * park)) {
+            Standard weight = standardService.queryWeight();
             for (int i = 0; i < dataList.size(); i++) {
+                //需要确定园区类型以计算
+                dataList.get(i).setType(type);
                 goal = goal(dataList.get(i), weight);
                 JSONObject object = new JSONObject();
                 object.put("year", year);
@@ -242,10 +281,12 @@ public class CalculatorController {
                 goalArray.add(goal);
             }
         }
-        //多园区类型(后面2*num个数据表示权重和标准)或单个园区类型且并未省略权重信息
+        //多园区类型(后面2*park个数据表示权重和标准)或单个园区类型且并未省略权重信息
         else {
-            for (int i = 0; i < dataList.size() - 2 * num; i++) {
-                goal = goal(dataList.get(i), dataList.get(year * num + i / year));
+            for (int i = 0; i < dataList.size() - 2 * park; i++) {
+                //将园区类型设定为其他园区
+                dataList.get(i).setType("其他园区");
+                goal = goal(dataList.get(i), dataList.get(year * park + i / year));
                 JSONObject object = new JSONObject();
                 object.put("year", year);
                 object.put("zoneNum", "园区" + (i / year + 1));
@@ -257,22 +298,21 @@ public class CalculatorController {
         }
 
         //生成文件到本地
-        ServletContext context = request.getSession().getServletContext();
-        String realPath = context.getRealPath("/file");
+        path = context.getRealPath("/file");
         //若文件路径不存在，则创建
-        File mkdir = new File(realPath);
+        File mkdir = new File(path);
         if (!mkdir.exists()) {
             mkdir.mkdirs();
         }
 
         Workbook wb = new XSSFWorkbook();
         //得到第一个shell
-        Sheet sheet = wb.createSheet("融合指数测度表");
+        Sheet sheet = wb.createSheet("产城融合度评测表");
         fileExcelGenerator(sheet, dataList, goalArray);
 
         //将文件输出到本地特定位置，供outputExcel返回给前端下载
-        String fileName = "融合指数测度表.xlsx";
-        FileOutputStream fileOutputStream = new FileOutputStream(realPath + "/" + fileName);
+        String fileName = "产城融合度评测表.xlsx";
+        FileOutputStream fileOutputStream = new FileOutputStream(path + "/" + fileName);
         wb.write(fileOutputStream);
         fileOutputStream.close();
 
@@ -282,8 +322,8 @@ public class CalculatorController {
     /**
      * Excel文件数据填充函数
      */
-    public void fileExcelGenerator(Sheet sheet, List<Weight> dataList, List<Double> goalArray) {
-        String[] str = {"产品融合度", "市场融合度", "技术融合度", "人员融合度", "政策依赖度", "资本依赖度", "社会文化影响度", "融合化发展指数"};
+    public void fileExcelGenerator(Sheet sheet, List<Standard> dataList, List<Double> goalArray) {
+        String[] str = {"居住用地", "生活服务设施用地", "工业仓储用地", "生产配套设施用地", "道路与交通设施用地", "绿化用地", "产城融合指数"};
 
         for (int r = 0; r < str.length; r++) {
             //生成最左列提示信息
@@ -292,33 +332,24 @@ public class CalculatorController {
             cell.setCellValue(str[r]);
 
             for (int i = 1; i <= dataList.size(); i++) {
-                Weight weight = dataList.get(i-1);
+                Standard standard = dataList.get(i-1);
+                cell = row.createCell(i);
                 if (r == 0) {
-                    cell = row.createCell(i);
-                    cell.setCellValue(weight.getIndustry());
+                    cell.setCellValue(standard.getOccupancy());
                 }else if (r == 1) {
-                    cell = row.createCell(i);
-                    cell.setCellValue(weight.getMarket());
+                    cell.setCellValue(standard.getInfrastructure());
                 }else if (r == 2) {
-                    cell = row.createCell(i);
-                    cell.setCellValue(weight.getTechnology());
+                    cell.setCellValue(standard.getDepository());
                 }else if (r == 3) {
-                    cell = row.createCell(i);
-                    cell.setCellValue(weight.getHr());
+                    cell.setCellValue(standard.getProduction());
                 }else if (r == 4) {
-                    cell = row.createCell(i);
-                    cell.setCellValue(weight.getPolicy());
+                    cell.setCellValue(standard.getTraffic());
                 }else if (r == 5) {
-                    cell = row.createCell(i);
-                    cell.setCellValue(weight.getCapital());
+                    cell.setCellValue(standard.getGreen());
                 }else if (r == 6) {
-                    cell = row.createCell(i);
-                    cell.setCellValue(weight.getCulture());
-                }else if (r == 7) {
                     if(i > goalArray.size()){
                         break;
                     }
-                    cell = row.createCell(i);
                     cell.setCellValue(goalArray.get(i-1));
                 }
             }
@@ -334,7 +365,7 @@ public class CalculatorController {
         ServletContext context = request.getSession().getServletContext();
         String realPath = context.getRealPath("/file");
 
-        String fileName = "融合指数测度表.xlsx";
+        String fileName = "产城融合度评测表.xlsx";
         File file = new File(realPath + "/" + fileName);
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -344,27 +375,107 @@ public class CalculatorController {
     }
 
     /**
-     * 按公式进行通用计算并返回得分
+     * 对于给定的计算公式归类出几种特定的计算模式
      */
-    public double goal(double[] point, double[] weight) {
-        double sum = 0;
-        for (int i = 0; i < 7; i++) {
-            sum += point[i] * weight[i];
+    public double calculationMode(int mode,double proportion){
+        double score = 0;
+        if(mode == 0){
+            if(proportion >= 0 && proportion < 10){
+                score = proportion * 10;
+            }else if(proportion >= 10 && proportion < 30){
+                score = 150 - proportion * 5;
+            }else if(proportion >= 30 && proportion <= 100){
+                score = 0;
+            }
+        }else if(mode == 1){
+            if(proportion >= 0 && proportion < 5){
+                score = proportion * 20;
+            }else if(proportion >= 5 && proportion < 15){
+                score = 150 - proportion * 10;
+            }else if(proportion >= 15 && proportion <= 100){
+                score = 0;
+            }
+        }else if(mode == 2){
+            if(proportion >= 0 && proportion < 60){
+                score = proportion * 5 / 3;
+            }else if(proportion >= 60 && proportion <= 100){
+                score = 250 - proportion * 2.5;
+            }
+        }else if(mode == 3){
+            if(proportion >= 0 && proportion < 3){
+                score = proportion * 100 / 3;
+            }else if(proportion >= 3 && proportion < 9){
+                score = 150 - proportion * 100 / 6;
+            }else if(proportion >= 9 && proportion <= 100){
+                score = 0;
+            }
+        }else if(mode == 4){
+            if(proportion >= 0 && proportion < 70){
+                score = proportion * 10 / 7;
+            }else if(proportion >= 70 && proportion <= 100){
+                score = (100 - proportion) * 10 / 3;
+            }
+        }else if(mode == 5){
+            if(proportion >= 0 && proportion < 7){
+                score = proportion * 100 / 7;
+            }else if(proportion >= 7 && proportion < 21){
+                score = 150 - proportion * 50 / 7;
+            }else if(proportion >= 21 && proportion <= 100){
+                score = 0;
+            }
+        }else if(mode == 6){
+            if(proportion >= 0 && proportion < 50){
+                score = proportion * 2;
+            }else if(proportion >= 50 && proportion <= 100){
+                score = 200 - proportion * 2;
+            }
+        }else if(mode == 7){
+            if(proportion >= 0 && proportion < 15){
+                score = proportion * 20 / 3;
+            }else if(proportion >= 15 && proportion < 45){
+                score = 150 - proportion * 10 / 3;
+            }else if(proportion >= 45 && proportion <= 100){
+                score = 0;
+            }
         }
-        return sum;
+        return score;
     }
 
     /**
-     * 对于传入的是两个weight类型的数据结构(由于数值类型和权重类型的数据结构相差不大，因此混用)
+     * 根据需求文档给定的计算公式进行相应指标层得分的计算
      */
-    public double goal(Weight data, Weight weight) {
-        return data.getIndustry() * weight.getIndustry()
-                + data.getMarket() * weight.getMarket()
-                + data.getTechnology() * weight.getTechnology()
-                + data.getHr() * weight.getHr()
-                + data.getPolicy() * weight.getPolicy()
-                + data.getCapital() * weight.getCapital()
-                + data.getCulture() * weight.getCulture();
+    public double goal(Standard standard, Standard weight) {
+        double occupancy = 0,infrastructure = 0,depository = 0,production = 0,traffic = 0,green = 0;
+        String type = standard.getType();
+
+        if(type.equals("经贸合作区") || type.equals("其他园区")){
+            occupancy=calculationMode(0,standard.getOccupancy());
+            infrastructure=calculationMode(1,standard.getInfrastructure());
+            depository=calculationMode(2,standard.getDepository());
+            production=calculationMode(1,standard.getProduction());
+            traffic=calculationMode(0,standard.getTraffic());
+            green=calculationMode(0,standard.getGreen());
+        }else if(type.equals("加工制造园区") || type.equals("商贸物流园区")){
+            occupancy=calculationMode(1,standard.getOccupancy());
+            infrastructure=calculationMode(3,standard.getInfrastructure());
+            depository=calculationMode(4,standard.getDepository());
+            production=calculationMode(1,standard.getProduction());
+            traffic=calculationMode(0,standard.getTraffic());
+            green=calculationMode(5,standard.getGreen());
+        }else if(type.equals("科技研发园区")){
+            occupancy=calculationMode(0,standard.getOccupancy());
+            infrastructure=calculationMode(0,standard.getInfrastructure());
+            depository=calculationMode(6,standard.getDepository());
+            production=calculationMode(1,standard.getProduction());
+            traffic=calculationMode(0,standard.getTraffic());
+            green=calculationMode(7,standard.getGreen());
+        }
+        return occupancy * weight.getOccupancy() +
+                infrastructure * weight.getInfrastructure() +
+                depository * weight.getDepository() +
+                production * weight.getProduction() +
+                traffic * weight.getTraffic() +
+                green * weight.getGreen();
     }
 
 //    //Json数据格式生成

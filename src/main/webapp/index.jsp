@@ -45,7 +45,7 @@
 <div class="layui-layout layui-layout-admin">
     <div class="layui-header position: absolute;">
         <a href="${ctx}/index.jsp">
-            <div class="layui-logo doc-logo" style="font-weight: bold">OICPCII</div>
+            <div class="layui-logo doc-logo" style="font-standard: bold">OICPCII</div>
         </a>
         <ul class="layui-nav layui-layout-left small-head-nav-left">
             <li class="layui-nav-item"><a href="javascript:;"></a></li>
@@ -108,7 +108,7 @@
         </a>
     </div>
 
-    <div class="layui-side left-nav-index" style="width:20%">
+    <div class="layui-side left-nav-index" style="width:24%">
         <div class="layui-side-scroll" style="width:100%">
             <!-- 左侧导航区域（可配合layui已有的垂直导航） --><!-- 选择区部分 -->
             <table class="table table-hover table-bordered">
@@ -139,14 +139,24 @@
                                     </SELECT>
                                 </DIV>
                             </li>
+                            <li class="layui-nav-item">园区类型数
+                                <DIV style="POSITION: relative">
+                                    <SELECT class="form-control" id="typeCountSel"
+                                            style="CLIP: rect(0px auto auto 80px); POSITION: relative">
+                                        <%
+                                            for (int i = 1; i <= 1000; i++) {
+                                                out.print("<OPTION value='" + i + "'>" + i + "</OPTION>");
+                                            }
+                                        %>
+                                    </SELECT>
+                                </DIV>
+                            </li>
                             <li class="layui-nav-item">园区类型
                                 <select class="form-control" id="type">
-                                    <option value="0" slected>经贸合作区</option>
-                                    <option value="1">工业园</option>
-                                    <option value="2">科技园</option>
-                                    <option value="3">资源园</option>
-                                    <option value="4">物流园/商贸园</option>
-                                    <option value="5">农业园</option>
+                                    <option value="0" selected>经贸合作区</option>
+                                    <option value="1">加工制造园区</option>
+                                    <option value="2">商贸物流园区</option>
+                                    <option value="3">科技研发园区</option>
                                     <option value="6">其他园区</option>
                                 </select>
                             </li>
@@ -170,7 +180,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <div class="panel panel-default" style="width:240px;">
+                        <div class="panel panel-default" style="width:100%;">
                             <div class="panel-heading">
                                 <h3 class="panel-title">
                                     查询结果列表
@@ -196,7 +206,7 @@
         </div>
     </div>
 
-    <div class="layui-body left-nav-body" style="left:20%">
+    <div class="layui-body left-nav-body" style="left:24%">
         <!-- 内容主体区域 -->
         <div class="blog-main">
             <!--左边栏目--><!-- 数据输入部分 -->
@@ -310,7 +320,7 @@
         <div class="clear"></div>
     </div>
 
-    <div class="layui-footer" style="left:20%;">
+    <div class="layui-footer" style="left:24%;">
         <!-- 底部固定区域 -->
         <button class="layui-btn layui-btn-primary layui-btn-sm" id="back" style="display: none;">
             <i class="fa fa-chevron-left" aria-hidden="true"></i>
@@ -1247,7 +1257,7 @@
 
     function calculation() {
         //debugger;
-        var array = new Array(15);//保存数值和权重
+        var array = new Array(13);//保存数值和权重
         for (var i = 0; i < 6; i++) {//保存数值
             array[i] = document.getElementById(("data" + i).toString()).value;
         }
@@ -1272,7 +1282,7 @@
             data: {"array": JSON.stringify(array), "type": type, "customize": customize},
             dataType: 'json',
             success: function (result) {
-                outputOpt = "表格输出";
+                outputOpt = "文件输出";
                 var data = eval('(' + result + ')')['goal'];
                 showResultInChartContainer(data);
             }
@@ -1291,7 +1301,7 @@
             str = "好";
         }
         const container = document.getElementById("chartContainer");
-        container.innerText = "融合化发展指数\n" + data + "\n融合化发展水平" + str;
+        container.innerText = "产城融合指数\n" + data + "\n产城融合度" + str;
         container.style.fontSize = '30px';
         container.style.textAlign = 'center';
         container.style.marginTop = '130px';
@@ -1306,6 +1316,10 @@
         var Obj2 = document.getElementById("timeSequence");
         var index2 = Obj2.selectedIndex;
         var text2 = Obj2.options[index2].text;
+        //园区类型数
+        var Obj3 = document.getElementById("typeCountSel");
+        var index3 = Obj3.selectedIndex;
+        var text3 = Obj3.options[index3].text;
         //园区类型
         var Obj4 = document.getElementById("type");
         var index4 = Obj4.selectedIndex;
@@ -1319,6 +1333,7 @@
         formData.append('file', $('#inputFile')[0].files[0]); // 固定格式
         formData.append('numCount', text1);
         formData.append('timeCount', text2);
+        formData.append('typeCount', text3);
         formData.append('type', text4);
         formData.append('chartType', value);
 
@@ -1343,13 +1358,13 @@
 
     // 导出Excel文件
     function fileExcelOutput() {
-        if (outputOpt == "表格输出") {
-            var array = new Array(15);
-            for (var i = 0; i < 7; i++) {
+        if (outputOpt == "文件输出") {
+            var array = new Array(13);
+            for (var i = 0; i < 6; i++) {
                 array[i] = document.getElementById(("data" + i).toString()).value;
             }
-            for (var i = 0; i < 7; i++) {
-                array[7 + i] = document.getElementById(("weight" + i).toString()).value;
+            for (var i = 0; i < 6; i++) {
+                array[6 + i] = document.getElementById(("weight" + i).toString()).value;
             }
             var typeObj = document.getElementById("type");
             var typeindex = typeObj.selectedIndex;
@@ -1365,9 +1380,7 @@
                 data: {"array": JSON.stringify(array), "type": type, "customize": customize},
 
             });
-        } else if (outputOpt == "文件输出") {
-
-        } else {
+        }else {
             alert("请输入新数据进行计算,即将导出的是历史数据文件！");
         }
     }

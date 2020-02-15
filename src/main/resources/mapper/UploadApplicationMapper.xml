@@ -7,8 +7,8 @@
 
     <!--用户上传申请时进行持久化操作-->
     <insert id="persist" useGeneratedKeys="true" keyProperty="id" parameterType="edu.seu.model.UploadApplication">
-        insert into upload(userID,userName,type,quota,standard,criterion,weight,goal)
-        value(#{userID},#{userName},#{type},#{quota},#{standard},#{criterion},#{weight},#{goal})
+        insert into upload(userID,userName,type,quota,standard,criterion,standard,goal)
+        value(#{userID},#{userName},#{type},#{quota},#{standard},#{criterion},#{standard},#{goal})
     </insert>
 
 </mapper>

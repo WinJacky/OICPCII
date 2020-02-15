@@ -1,6 +1,6 @@
 package edu.seu.util;
 
-import edu.seu.model.Weight;
+import edu.seu.model.Standard;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -88,17 +88,17 @@ public class ImportExcel {
     /**
      * 根据文件路径读取excel文件
      */
-    public List<Weight> read(String fileName, MultipartFile Mfile) {
+    public List<Standard> read(String filePath, MultipartFile Mfile) {
 
         //把spring文件上传的MultipartFile转换成CommonsMultipartFile类型
         CommonsMultipartFile cf = (CommonsMultipartFile) Mfile;
-        File file = new File("F:\\fileupload");
+        File file = new File(filePath);
         //创建一个目录 （它的路径名由当前 File对象指定，包括任一必须的父路径。）
         if (!file.exists()) {
             file.mkdirs();
         }
         //新建一个文件
-        File file1 = new File("F:\\fileupload\\" + System.currentTimeMillis() + ".xlsx");
+        File file1 = new File(filePath+"/" + System.currentTimeMillis() + ".xlsx");
         //将上传的文件写入新建的文件中
         try {
             cf.getFileItem().write(file1);
@@ -107,7 +107,7 @@ public class ImportExcel {
         }
 
         //初始化客户信息的集合
-        List<Weight> dataList = new ArrayList<>();
+        List<Standard> dataList = new ArrayList<>();
         //初始化输入流
         InputStream is = null;
         try {
@@ -158,8 +158,8 @@ public class ImportExcel {
      *          然后，可以通过 CheckExcelUtil 类的方法，接收文件名称参数，来判断excel所属的版本。最后再调用此方法来读取excel数据。
      *
      */
-    public List<Weight> read(InputStream inputStream, boolean isExcel2003) {
-        List<Weight> dataList = new ArrayList<>();
+    public List<Standard> read(InputStream inputStream, boolean isExcel2003) {
+        List<Standard> dataList = new ArrayList<>();
         try {
             /** 根据版本选择创建Workbook的方式 */
             Workbook wb = null;
@@ -178,8 +178,8 @@ public class ImportExcel {
     /**
      * 读取数据
      */
-    private List<Weight> read(Workbook wb) {
-        List<Weight> dataList;
+    private List<Standard> read(Workbook wb) {
+        List<Standard> dataList;
         //得到第一个shell
         Sheet sheet = wb.getSheetAt(0);
         //得到Excel的行数
@@ -190,7 +190,7 @@ public class ImportExcel {
         }
 
         //用户文件上传
-        if(this.getTotalRows() == 7) {
+        if(this.getTotalRows() == 6) {
             dataList = dataListGenerator(sheet,0,0);
         }
         //管理员文件上传(修改权重及标准)
@@ -200,13 +200,13 @@ public class ImportExcel {
         return dataList;
     }
 
-    public List<Weight> dataListGenerator(Sheet sheet, int cellStart, int rowStart){
-        List<Weight> dataList = new ArrayList<>();
-        Weight weight;
+    public List<Standard> dataListGenerator(Sheet sheet, int cellStart, int rowStart){
+        List<Standard> dataList = new ArrayList<>();
+        Standard standard;
 
         //循环Excel的列
         for (int c = cellStart; c < this.getTotalCells(); c++) {
-            weight = new Weight();
+            standard = new Standard();
             //循环Excel的行
             for (int r = rowStart; r < this.getTotalRows(); r++) {
                 Row row = sheet.getRow(r);
@@ -216,24 +216,22 @@ public class ImportExcel {
                 Cell cell = row.getCell(c);
                 if (null != cell) {
                     if (r == rowStart) {
-                        weight.setIndustry(cell.getNumericCellValue());
+                        standard.setOccupancy(cell.getNumericCellValue());
                     } else if (r == rowStart+1) {
-                        weight.setMarket(cell.getNumericCellValue());
+                        standard.setInfrastructure(cell.getNumericCellValue());
                     } else if (r == rowStart+2) {
-                        weight.setTechnology(cell.getNumericCellValue());
+                        standard.setDepository(cell.getNumericCellValue());
                     } else if (r == rowStart+3) {
-                        weight.setHr(cell.getNumericCellValue());
+                        standard.setProduction(cell.getNumericCellValue());
                     } else if (r == rowStart+4) {
-                        weight.setPolicy(cell.getNumericCellValue());
+                        standard.setTraffic(cell.getNumericCellValue());
                     } else if (r == rowStart+5) {
-                        weight.setCapital(cell.getNumericCellValue());
-                    } else if (r == rowStart+6) {
-                        weight.setCulture(cell.getNumericCellValue());
+                        standard.setGreen(cell.getNumericCellValue());
                     }
                 }
             }
             //添加数据
-            dataList.add(weight);
+            dataList.add(standard);
         }
         return dataList;
     }
